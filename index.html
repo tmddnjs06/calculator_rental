@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>계산기 대여 시스템</title>
+    <style>
+        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; }
+        body { font-family: 'Noto Sans KR', sans-serif; background: #f4f7f9; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; -webkit-user-select:none; user-select:none; }
+        .card { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .status-box { flex: 1; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 10px; font-size: 14px; border: 1px solid #eee; }
+        .badge { display: block; font-size: 12px; font-weight: bold; margin-top: 5px; padding: 3px; border-radius: 5px; }
+        .available { background: #e8f5e9; color: var(--success); }
+        .rented { background: #ffebee; color: var(--danger); }
+        .tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 20px; }
+        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #999; font-weight: bold; }
+        .tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 14px; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+        #resultArea { display: none; text-align: center; padding: 20px; background: #f0f7ff; border-radius: 10px; }
+        .pw-display { font-size: 32px; font-weight: 800; color: var(--danger); margin: 10px 0; }
+    </style>
+</head>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+<div class="card">
+    <h2 style="text-align:center">📱 물품 대여소</h2>
+    <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <div class="status-box">1번 물품 <span id="s1" class="badge">확인중</span></div>
+        <div class="status-box">2번 물품 <span id="s2" class="badge">확인중</span></div>
+    </div>
+    <div id="inputSection">
+        <div class="tabs">
+            <div id="t1" class="tab active" onclick="setMode('rent')">대여하기</div>
+            <div id="t2" class="tab" onclick="setMode('return')">반납하기</div>
+        </div>
+        <form id="f">
+            <input type="hidden" id="m" value="rent">
+            <div class="form-group"><label>이름</label><input type="text" id="n" required></div>
+            <div class="form-group"><label>학번</label><input type="text" id="s" placeholder="0000-00000" pattern="\d{4}-\d{5}" required></div>
+            <div class="form-group"><label>전화번호</label><input type="tel" id="p" placeholder="010-0000-0000" pattern="010-\d{4}-\d{4}" required></div>
+            <div class="form-group"><label>물품</label><select id="i" required><option value="1">1번</option><option value="2">2번</option></select></div>
+            <button type="submit" id="b" class="btn" style="background:var(--primary)">신청하기</button>
+        </form>
+    </div>
+    <div id="resultArea">
+        <h3 id="rt">처리 완료</h3>
+        <div id="pb">비밀번호: <div class="pw-display" id="pd">0000</div></div>
+        <button onclick="location.reload()" style="margin-top:15px; padding:10px; cursor:pointer;">처음으로</button>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVXHGD18OCPNIREpWYQVmHYOtakwI0ABNguVDOW81t2Hvt0NfrPT3-50MMxYdH4fL3wQ/exec";
+
+    // 개발자 도구 방지
+    document.onkeydown = function(e) {
+        if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false;
+    };
+
+    function setMode(m){
+        document.getElementById('m').value = m;
+        document.getElementById('t1').className = m=='rent'?'tab active':'tab';
+        document.getElementById('t2').className = m=='return'?'tab active':'tab';
+        document.getElementById('b').innerText = m=='rent'?'대여 신청':'반납 완료하기';
+        document.getElementById('b').style.background = m=='rent'?'var(--primary)':'var(--success)';
+    }
+
+    window.onload = () => {
+        fetch(`${SCRIPT_URL}?type=status`).then(r=>r.json()).then(d=>{
+            document.getElementById('s1').innerText = d['1']=='rented'?'대여중':'가능';
+            document.getElementById('s1').className = 'badge '+(d['1']=='rented'?'rented':'available');
+            document.getElementById('s2').innerText = d['2']=='rented'?'대여중':'가능';
+            document.getElementById('s2').className = 'badge '+(d['2']=='rented'?'rented':'available');
+        });
+    };
+
+    document.getElementById('f').onsubmit = (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('b');
+        btn.disabled = true; btn.innerText = "처리 중...";
+        const params = new URLSearchParams({
+            type: document.getElementById('m').value,
+            name: document.getElementById('n').value,
+            studentId: document.getElementById('s').value,
+            phone: document.getElementById('p').value,
+            item: document.getElementById('i').value
+        });
+        fetch(`${SCRIPT_URL}?${params.toString()}`).then(r=>r.json()).then(data=>{
+            if (data.result === "error") { alert(data.message); location.reload(); }
+            else {
+                document.getElementById('inputSection').style.display='none';
+                document.getElementById('resultArea').style.display='block';
+                if(data.password){ 
+                    document.getElementById('pd').innerText = data.password;
+                    document.getElementById('rt').innerText="✅ 대여 성공!";
+                    document.getElementById('pb').style.display='block';
+                } else { 
+                    document.getElementById('pb').style.display='none'; 
+                    document.getElementById('rt').innerText="✅ 반납 완료되었습니다!"; 
+                }
+            }
+        }).catch(err => { alert("연결 오류!"); btn.disabled = false; });
+    };
+</script>
+</body>
+</html>
