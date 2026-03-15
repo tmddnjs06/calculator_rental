@@ -6,10 +6,9 @@
     <meta name="robots" content="noindex, nofollow">
     <title>계산기 대여 시스템</title>
     <style>
-        /* CSS는 동일함 */
         :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; }
-        body { font-family: 'Noto Sans KR', sans-serif; background: #f4f7f9; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none; }
-        .card { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        body { font-family: 'Noto Sans KR', sans-serif; background: #f4f7f9; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; -webkit-user-select:none; user-select:none; }
+        .card { background: white; width: 95%; max-width: 400px; padding: 25px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .status-box { flex: 1; text-align: center; padding: 10px; background: #f8f9fa; border-radius: 10px; font-size: 14px; border: 1px solid #eee; }
         .badge { display: block; font-size: 12px; font-weight: bold; margin-top: 5px; padding: 3px; border-radius: 5px; }
         .available { background: #e8f5e9; color: var(--success); }
@@ -19,15 +18,16 @@
         .tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 14px; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         #resultArea { display: none; text-align: center; padding: 20px; background: #f0f7ff; border-radius: 10px; }
-        .pw-display { font-size: 32px; font-weight: 800; color: var(--danger); margin: 10px 0; }
+        .pw-display { font-size: 40px; font-weight: 800; color: var(--danger); margin: 15px 0; letter-spacing: 5px; }
+        .info-text { font-size: 13px; color: #666; margin-top: 5px; }
     </style>
 </head>
 <body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 <div class="card">
-    <h2 style="text-align:center">📱 계산기 대여</h2>
+    <h2 style="text-align:center; margin-top:0;">📱 계산기 대여소</h2>
     <div style="display:flex; gap:10px; margin-bottom:20px;">
         <div class="status-box">1번 계산기 <span id="s1" class="badge">확인중</span></div>
         <div class="status-box">2번 계산기 <span id="s2" class="badge">확인중</span></div>
@@ -39,45 +39,54 @@
         </div>
         <form id="f">
             <input type="hidden" id="m" value="rent">
-            <div class="form-group"><label>이름</label><input type="text" id="n" required></div>
-            <div class="form-group"><label>학번</label><input type="text" id="s" placeholder="0000-00000" pattern="\d{4}-\d{5}" title="학번 형식을 맞춰주세요 (예: 2025-12345)" required></div>
-            <div class="form-group"><label>전화번호</label><input type="tel" id="p" placeholder="010-0000-0000" pattern="010-\d{4}-\d{4}" title="010-0000-0000 형식으로 입력해주세요" required></div>
-            <div class="form-group"><label>계산기</label><select id="i" required><option value="1">1번</option><option value="2">2번</option></select></div>
-            <button type="submit" id="b" class="btn" style="background:var(--primary)">대여 신청</button>
+            <div class="form-group"><label>이름</label><input type="text" id="n" placeholder="실명 입력" required></div>
+            <div class="form-group"><label>학번</label><input type="text" id="s" placeholder="예: 2024-12345" pattern="\d{4}-\d{5}" required></div>
+            <div class="form-group"><label>전화번호</label><input type="tel" id="p" placeholder="010-0000-0000" pattern="010-\d{4}-\d{4}" required></div>
+            <div class="form-group"><label>계산기 번호</label><select id="i" required><option value="1">1번 계산기</option><option value="2">2번 계산기</option></select></div>
+            <p id="helperText" class="info-text">※ 대여 시 입력한 정보가 반납 시와 일치해야 합니다.</p>
+            <button type="submit" id="b" class="btn" style="background:var(--primary)">대여 신청하기</button>
         </form>
     </div>
     <div id="resultArea">
-        <h3 id="rt">처리 완료</h3>
-        <div id="pb">비밀번호: <div class="pw-display" id="pd">0000</div></div>
-        <button onclick="location.reload()" style="margin-top:15px; padding:10px; cursor:pointer;">처음으로</button>
+        <h3 id="rt" style="margin-top:0;">처리 완료</h3>
+        <div id="pb">
+            <p style="margin-bottom:5px; color:#555;">보관함 비밀번호</p>
+            <div class="pw-display" id="pd">0000</div>
+            <p class="info-text">비밀번호를 사용하여 보관함을 이용하세요.</p>
+        </div>
+        <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; cursor:pointer; border-radius:5px; border:1px solid #ccc; background:#fff;">처음으로 돌아가기</button>
     </div>
 </div>
 
 <script>
-    // F12 개발자 도구 방지
+    // 구글 웹 앱 URL을 아래에 넣으세요
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGRMc9DoYTgRsKv5yixORs-z_oiobfB5_jqFpboQBvf68op_g9bFXQBBaF3bHjD3VDyg/exec";
+
+    // 키보드 보안 (F12, 소스보기 방지)
     document.onkeydown = function(e) {
         if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false;
     };
-
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVXHGD18OCPNIREpWYQVmHYOtakwI0ABNguVDOW81t2Hvt0NfrPT3-50MMxYdH4fL3wQ/exec";
 
     function setMode(m){
         document.getElementById('m').value = m;
         document.getElementById('t1').className = m=='rent'?'tab active':'tab';
         document.getElementById('t2').className = m=='return'?'tab active':'tab';
-        document.getElementById('b').innerText = m=='rent'?'대여 신청':'반납 완료하기';
+        document.getElementById('b').innerText = m=='rent'?'대여 신청하기':'반납 완료하기';
         document.getElementById('b').style.background = m=='rent'?'var(--primary)':'var(--success)';
+        document.getElementById('helperText').innerText = m=='rent' ? '※ 대여 시 입력한 정보가 반납 시와 일치해야 합니다.' : '※ 대여 시 입력했던 본인 정보를 정확히 입력해주세요.';
     }
 
+    // 초기 상태 로드
     window.onload = () => {
         fetch(`${SCRIPT_URL}?type=status`).then(r=>r.json()).then(d=>{
             document.getElementById('s1').innerText = d['1']=='rented'?'대여중':'가능';
             document.getElementById('s1').className = 'badge '+(d['1']=='rented'?'rented':'available');
-            document.getElementById('s2').innerText = d['2']?'대여중':'가능';
+            document.getElementById('s2').innerText = d['2']=='rented'?'대여중':'가능';
             document.getElementById('s2').className = 'badge '+(d['2']=='rented'?'rented':'available');
         });
     };
 
+    // 폼 제출 처리
     document.getElementById('f').onsubmit = (e) => {
         e.preventDefault();
         const btn = document.getElementById('b');
@@ -94,21 +103,23 @@
         fetch(`${SCRIPT_URL}?${params.toString()}`).then(r=>r.json()).then(data=>{
             if (data.result === "error") {
                 alert(data.message);
-                location.reload();
+                btn.disabled = false;
+                btn.innerText = document.getElementById('m').value === 'rent' ? "대여 신청하기" : "반납 완료하기";
             } else {
                 document.getElementById('inputSection').style.display='none';
                 document.getElementById('resultArea').style.display='block';
-                if(data.password){ 
-                    document.getElementById('pd').innerText = data.password;
+                
+                // 대여/반납 모두 비밀번호 표시
+                document.getElementById('pd').innerText = data.password;
+                
+                if(document.getElementById('m').value === 'rent'){ 
                     document.getElementById('rt').innerText="✅ 대여 성공!";
-                    document.getElementById('pb').style.display='block';
                 } else { 
-                    document.getElementById('pb').style.display='none'; 
-                    document.getElementById('rt').innerText="✅ 반납 완료되었습니다!"; 
+                    document.getElementById('rt').innerText="✅ 반납 확인되었습니다!"; 
                 }
             }
         }).catch(err => {
-            alert("연결 오류가 발생했습니다.");
+            alert("연결 오류가 발생했습니다. 네트워크를 확인해주세요.");
             btn.disabled = false;
         });
     };
