@@ -37,7 +37,7 @@
         </div>
         <form id="f">
             <input type="hidden" id="m" value="rent">
-            <div class="form-group"><label>이름</label><input type="text" id="n" placeholder="실명 입력" required></div>
+            <div class="form-group"><label>이름</label><input type="text" id="n" required></div>
             <div class="form-group"><label>학번</label><input type="text" id="s" placeholder="예: 2025-12345" pattern="\d{4}-\d{5}" required></div>
             <div class="form-group"><label>전화번호</label><input type="tel" id="p" placeholder="010-0000-0000" pattern="010-\d{4}-\d{4}" required></div>
             <div class="form-group"><label>계산기 번호</label><select id="i" required><option value="1">1번 계산기</option><option value="2">2번 계산기</option></select></div>
@@ -56,7 +56,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGRMc9DoYTgRsKv5yixORs-z_oiobfB5_jqFpboQBvf68op_g9bFXQBBaF3bHjD3VDyg/exec"; // <--- 꼭 본인 주소로 수정!
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGRMc9DoYTgRsKv5yixORs-z_oiobfB5_jqFpboQBvf68op_g9bFXQBBaF3bHjD3VDyg/exec";
 
     function setMode(m){
         document.getElementById('m').value = m;
@@ -70,12 +70,12 @@
         fetch(`${SCRIPT_URL}?type=status`).then(r=>r.json()).then(d=>{
             const s1 = document.getElementById('s1');
             const isR1 = d['1']=='rented';
-            s1.innerText = isR1 ? '대여중' : '가능';
+            s1.innerText = isR1 ? '대여중' : '대여 가능';
             s1.className = 'badge ' + (isR1 ? 'rented' : 'available');
 
             const s2 = document.getElementById('s2');
             const isR2 = d['2']=='rented';
-            s2.innerText = isR2 ? '대여중' : '가능';
+            s2.innerText = isR2 ? '대여중' : '대여 가능';
             s2.className = 'badge ' + (isR2 ? 'rented' : 'available');
         });
     }
