@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>계산기 대여 시스템</title>
+    <title>원자핵공학과 계산기 대여</title>
     <style>
         :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; }
         body { font-family: 'Noto Sans KR', sans-serif; background: #f4f7f9; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; -webkit-user-select:none; user-select:none; }
@@ -38,8 +38,11 @@
         <form id="f">
             <input type="hidden" id="m" value="rent">
             <div class="form-group"><label>이름</label><input type="text" id="n" required></div>
-            <div class="form-group"><label>학번</label><input type="text" id="s" placeholder="0000-00000" pattern="\d{4}-\d{5}" required></div>
-            <div class="form-group"><label>전화번호</label><input type="tel" id="p" placeholder="010-0000-0000" pattern="010-\d{4}-\d{4}" required></div>
+            <div class="form-group"><label>학번</label><input type="text" id="s" placeholder="예: 2025-12345" required></div>
+            <div class="form-group">
+                <label>전화번호</label>
+                <input type="text" id="p" inputmode="tel" placeholder="010-0000-0000" required>
+            </div>
             <div class="form-group"><label>계산기 번호</label><select id="i" required><option value="1">1번 계산기</option><option value="2">2번 계산기</option></select></div>
             <button type="submit" id="b" class="btn" style="background:var(--primary)">대여 신청하기</button>
         </form>
@@ -47,16 +50,16 @@
     <div id="resultArea">
         <h3 id="rt" style="margin-top:0;">처리 완료</h3>
         <div id="pb">
-            <p style="margin-bottom:5px; color:#555;">보관함 비밀번호</p>
+            <p style="margin-bottom:5px; color:#555;">사물함 비밀번호</p>
             <div class="pw-display" id="pd">0000</div>
-            <p style="font-size:12px; color:#666;">보관함을 열어 물품을 이용/반납하세요.</p>
+            <p style="font-size:12px; color:#666;">사물함을 열어 계산기를 이용/반납하세요.</p>
         </div>
         <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; cursor:pointer; border-radius:5px; border:1px solid #ccc; background:#fff;">처음으로</button>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGRMc9DoYTgRsKv5yixORs-z_oiobfB5_jqFpboQBvf68op_g9bFXQBBaF3bHjD3VDyg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGRMc9DoYTgRsKv5yixORs-z_oiobfB5_jqFpboQBvf68op_g9bFXQBBaF3bHjD3VDyg/exec"; 
 
     function setMode(m){
         document.getElementById('m').value = m;
@@ -99,7 +102,7 @@
                 document.getElementById('inputSection').style.display='none';
                 document.getElementById('resultArea').style.display='block';
                 document.getElementById('pd').innerText = data.password;
-                document.getElementById('rt').innerText = document.getElementById('m').value === 'rent' ? "✅ 대여 완료" : "✅ 반납 완료";
+                document.getElementById('rt').innerText = document.getElementById('m').value === 'rent' ? "✅ 대여 성공!" : "✅ 반납 확인!";
             }
         }).catch(err => { alert("오류 발생!"); btn.disabled = false; });
     };
